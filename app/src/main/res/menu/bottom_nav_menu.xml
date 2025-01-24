@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_report"
+        android:icon="@drawable/baseline_analytics_24"
+        android:title="reports" />
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="home" />
+
+    <item
+        android:id="@+id/navigation_support"
+        android:icon="@drawable/baseline_support_agent_24"
+        android:title="support" />
+
+</menu>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemIconSize">24dp</item>
+        <item name="itemTextAppearanceActive">@style/ActiveTextAppearance</item>
+        <item name="itemTextAppearanceInactive">@style/InactiveTextAppearance</item>
+    </style>
+
+    <style name="Theme.Geotendy" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
+    </style>
+    <style name="ActiveTextAppearance" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">@color/purple</item>
+    </style>
+
+    <style name="InactiveTextAppearance" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+</resources>
