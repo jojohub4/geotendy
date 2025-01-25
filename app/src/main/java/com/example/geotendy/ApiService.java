@@ -9,10 +9,10 @@ import retrofit2.http.GET;
 
 public interface ApiService {
     @POST("/api/login")
-    Call<LoginResponse> loginUser(@Body LoginRequest request);
+    Call<LoginResponse> loginUser(@Body LoginRequest request);//verify user
 
     @POST("/api/attendance/record")
-    Call<Void> recordAttendance(@Body AttendanceRecord attendanceRecord);
-    @GET("/api/attendance/data")
-    Call<List<AttendanceRecord>> getAttendanceData(); // Fetch attendance data
+    Call<Void> recordAttendance(@Body AttendanceRecord attendanceRecord);//send attendance to the database
+    @GET("/api/attendance/logs")
+    Call<List<AttendanceLog>> fetchAttendanceLogs(); // Fetch attendance data from the database
 }

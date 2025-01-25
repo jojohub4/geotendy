@@ -50,28 +50,10 @@ public class StudentDashboard extends AppCompatActivity {
         }
         greetingText.setText(greeting);
 
-        //logging out
-        CardView exit = findViewById(R.id.cardLogout);
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.clear();
-                editor.apply();
-                startActivity(new Intent(StudentDashboard.this,LoginActivity.class));
-            }
-        });
+
         //directing the user to the unit page
         CardView unit = findViewById(R.id.cardUnits);
         unit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(StudentDashboard.this,Units.class));
-            }
-        });
-        //directing the user to the notification page
-        CardView notification = findViewById(R.id.cardnotification);
-        notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(StudentDashboard.this,Units.class));
@@ -82,7 +64,7 @@ public class StudentDashboard extends AppCompatActivity {
         report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(StudentDashboard.this,Units.class));
+                startActivity(new Intent(StudentDashboard.this,ReportActivity.class));
             }
         });
         //directing the user to the location page
@@ -99,6 +81,25 @@ public class StudentDashboard extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(StudentDashboard.this,Units.class));
+            }
+        });
+        //directing the user to the info page
+        CardView notification = findViewById(R.id.cardInfo);
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(StudentDashboard.this,Units.class));
+            }
+        });
+        //logging out
+        CardView exit = findViewById(R.id.cardLogout);
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+                startActivity(new Intent(StudentDashboard.this,LoginActivity.class));
             }
         });
     }
