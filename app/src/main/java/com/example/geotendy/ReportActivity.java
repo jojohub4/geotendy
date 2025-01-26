@@ -45,6 +45,9 @@ public class ReportActivity extends AppCompatActivity {
             public void onResponse(Call<List<AttendanceLog>> call, Response<List<AttendanceLog>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<AttendanceLog> logs = calculateDurationAndStatus(response.body());
+                    if (logs.isEmpty()) {
+                        Toast.makeText(ReportActivity.this, "No attendance logs found", Toast.LENGTH_SHORT).show();
+                    }
                     adapter = new AttendanceAdapter(logs);
                     recyclerView.setAdapter(adapter);
                 } else {
@@ -61,10 +64,10 @@ public class ReportActivity extends AppCompatActivity {
     }
 
     private String extractDate(String timestamp) {
-        if (timestamp != null && !timestamp.isEmpty()) {
-            return timestamp.split("T")[0]; // Splits at 'T' and gets the first part (date)
+        if (timestamp != null && !timestamp.isEmpty() && timestamp.contains("T")) {
+            return timestamp.split("T")[0]; // Extracts date portion
         }
-        return "N/A"; // Default value if null
+        return "N/A"; // Default value for null or invalid timestamp
     }
 
     private String extractTime(String timestamp) {
@@ -77,22 +80,21 @@ public class ReportActivity extends AppCompatActivity {
         return "N/A"; // Default value if null
     }
 
+
+
     private String calculateDuration(String punchInTime, String punchOutTime) {
-        if (punchInTime == null || punchOutTime == null) {
+        if (punchInTime == null || punchOutTime == null || punchInTime.equals("N/A") || punchOutTime.equals("N/A")) {
             return "N/A"; // Return if either is missing
         }
 
         try {
-            // Define the format of the time
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
             Date punchIn = timeFormat.parse(punchInTime);
             Date punchOut = timeFormat.parse(punchOutTime);
 
-            // Calculate duration in milliseconds
             long durationMillis = punchOut.getTime() - punchIn.getTime();
             long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
 
-            // Convert minutes into hours and minutes
             return String.format(Locale.getDefault(), "%d hrs %d mins",
                     durationMinutes / 60, durationMinutes % 60);
         } catch (Exception e) {
@@ -100,6 +102,7 @@ public class ReportActivity extends AppCompatActivity {
             return "Error"; // Handle parsing errors
         }
     }
+
 
     private String determineStatus(String duration) {
         if ("N/A".equals(duration) || "Error".equals(duration)) {
@@ -134,14 +137,17 @@ public class ReportActivity extends AppCompatActivity {
 
         for (AttendanceLog log : logs) {
             try {
-                // Extract date and time from timestamps
-                String punchInDate = extractDate(log.getPunchInTime());
-                String punchOutDate = extractDate(log.getPunchOutTime());
+                // Extract date from punchInTime (or punchOutTime if punchInTime is null)
+                String date = extractDate(log.getPunchInTime() != null ? log.getPunchInTime() : log.getPunchOutTime());
+                log.setDate(date); // Set the extracted date in the log
+
+                // Extract time from punchInTime and punchOutTime
                 String punchInTime = extractTime(log.getPunchInTime());
                 String punchOutTime = extractTime(log.getPunchOutTime());
 
-//                log.setPunchInDate(punchInDate);
-//                log.setPunchOutDate(punchOutDate);
+                // Set the cleaned-up punchInTime and punchOutTime
+                log.setPunchInTime(punchInTime);
+                log.setPunchOutTime(punchOutTime);
 
                 // Calculate duration and determine status
                 String duration = calculateDuration(punchInTime, punchOutTime);
@@ -158,5 +164,7 @@ public class ReportActivity extends AppCompatActivity {
 
         return updatedLogs;
     }
+
+
 
 }

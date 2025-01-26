@@ -1,0 +1,100 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="4dp"
+    android:weightSum="7"
+    android:background="@android:color/white">
+
+    <!-- Date -->
+    <TextView
+        android:id="@+id/text_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="Date"
+        android:textSize="14sp"
+        android:background="@drawable/cell_border"
+        android:textColor="@android:color/black" />
+
+    <!-- Punch In -->
+    <TextView
+        android:id="@+id/text_in"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="In"
+        android:textSize="14sp"
+        android:background="@drawable/cell_border"
+        android:textColor="@android:color/black" />
+
+    <!-- Punch Out -->
+    <TextView
+        android:id="@+id/text_out"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="Out"
+        android:textSize="14sp"
+        android:background="@drawable/cell_border"
+        android:textColor="@android:color/black" />
+
+    <!-- Duration -->
+    <TextView
+        android:id="@+id/text_duration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="Duration"
+        android:textSize="14sp"
+        android:background="@drawable/cell_border"
+        android:textColor="@android:color/black" />
+
+    <!-- Unit Code -->
+    <TextView
+        android:id="@+id/text_unit_code"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="Code"
+        android:textSize="14sp"
+        android:background="@drawable/cell_border"
+        android:textColor="@android:color/black" />
+
+    <!-- Unit Name -->
+    <TextView
+        android:id="@+id/text_unit_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="Unit Name"
+        android:textSize="14sp"
+        android:background="@drawable/cell_border"
+        android:textColor="@android:color/black" />
+
+    <!-- Status -->
+    <TextView
+        android:id="@+id/text_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="Status"
+        android:textSize="14sp"
+        android:background="@drawable/cell_border"
+        android:textColor="@android:color/black" />
+</LinearLayout>

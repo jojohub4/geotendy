@@ -1,53 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:background="@drawable/background">
+    android:padding="8dp">
 
+    <!-- Date -->
     <TextView
-        android:id="@+id/textDate"
+        android:id="@+id/text_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Date"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:paddingBottom="4dp"/>
 
+    <!-- Unit Code and Name -->
     <TextView
-        android:id="@+id/textUnitCode"
-        android:layout_width="wrap_content"
+        android:id="@+id/text_unit_details"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp" />
+        android:text="Unit Code - Unit Name"
+        android:textSize="14sp"
+        android:paddingBottom="4dp"/>
 
+    <!-- Duration -->
     <TextView
-        android:id="@+id/textUnitName"
-        android:layout_width="wrap_content"
+        android:id="@+id/text_duration"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp" />
+        android:text="Duration"
+        android:textSize="14sp"
+        android:paddingBottom="4dp"/>
 
+    <!-- Punch In and Out -->
     <TextView
-        android:id="@+id/textPunchInTime"
-        android:layout_width="wrap_content"
+        android:id="@+id/text_in_out"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp" />
+        android:text="In: Time  Out: Time"
+        android:textSize="14sp"
+        android:paddingBottom="4dp"/>
 
+    <!-- Status -->
     <TextView
-        android:id="@+id/textPunchOutTime"
-        android:layout_width="wrap_content"
+        android:id="@+id/text_status"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/textDuration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/textStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp" />
-
+        android:text="Status"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:paddingBottom="8dp"/>
 </LinearLayout>
