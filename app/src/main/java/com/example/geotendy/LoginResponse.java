@@ -12,6 +12,7 @@ public class LoginResponse {
     private int semester;
     private String registration_no;
     private String email;
+    private String role;
     private List<CourseUnit> courses; // Ensure this matches the response structure
 
     // Getters for all fields
@@ -50,4 +51,6 @@ public class LoginResponse {
     public String getRegistration_no() {return registration_no;}
 
     public String getEmail() {return email;}
+
+    public String getRole() {return role;}
 }

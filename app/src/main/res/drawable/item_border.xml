@@ -3,8 +3,8 @@
     <!-- Border properties -->
     <stroke
         android:width="2dp"
-        android:color="@color/blue" /> <!-- Ensure this color contrasts with your background -->
+        android:color="@color/white" /> <!-- Ensure this color contrasts with your background -->
 
     <!-- Corner radius -->
-    <corners android:radius="4dp" />
+    <corners android:radius="8dp" />
 </shape>

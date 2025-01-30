@@ -5,8 +5,19 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background2"
+    android:background="@color/white"
     tools:context=".Units">
+
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="match_parent"
+        android:layout_height="151dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/rounded_bottom" />
 
     <TextView
         android:id="@+id/textViewGreeting"
@@ -14,7 +25,7 @@
         android:layout_height="37dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:textColor="?android:textColorPrimary"
+        android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,7 +36,7 @@
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
-        android:textColor="?android:textColorPrimary"
+        android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,9 +44,10 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="177dp"
-        android:layout_height="169dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="126dp"
+        android:layout_height="126dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
         android:background="@drawable/person_back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -47,7 +59,7 @@
         android:layout_height="388dp"
         android:layout_marginTop="32dp"
         android:layout_weight="1"
-        android:background="@android:color/transparent"
+        android:background="#004aad"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.542"
@@ -60,13 +72,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
         android:text="Current Registerd Units"
-        android:textColor="?android:textColorPrimary"
+        android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background2"
+    android:background="@color/white"
     tools:context=".StudentDashboard">
 
     <ScrollView
@@ -14,9 +14,16 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout_editor_absoluteX="-44dp"
-            tools:layout_editor_absoluteY="0dp">
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/rounded_bottom" />
 
             <TextView
                 android:id="@+id/textViewGreeting"
@@ -44,10 +51,11 @@
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="126dp"
-                android:layout_height="122dp"
-                android:layout_marginTop="60dp"
+                android:layout_height="126dp"
+                android:layout_marginTop="36dp"
+                android:background="@drawable/person_back"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.757"
+                app:layout_constraintHorizontal_bias="0.943"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_person_24" />
@@ -293,18 +301,9 @@
                 </androidx.cardview.widget.CardView>
 
             </GridLayout>
-
-            <ImageView
-                android:id="@+id/imageViewSettings"
-                android:layout_width="53dp"
-                android:layout_height="35dp"
-                android:layout_marginTop="44dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.955"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/baseline_settings_24" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     </ScrollView>
+
 </RelativeLayout>

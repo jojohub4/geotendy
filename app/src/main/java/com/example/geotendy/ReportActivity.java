@@ -1,12 +1,14 @@
 package com.example.geotendy;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,8 +22,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ReportActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
-    private AttendanceAdapter adapter;
+    private TableLayout tableLayout;
     private ApiService apiService;
 
     @Override
@@ -29,8 +30,8 @@ public class ReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
 
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // Initialize TableLayout
+        tableLayout = findViewById(R.id.tableLayout);
 
         // Create an ApiService instance using RetrofitClient
         apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
@@ -47,9 +48,9 @@ public class ReportActivity extends AppCompatActivity {
                     List<AttendanceLog> logs = calculateDurationAndStatus(response.body());
                     if (logs.isEmpty()) {
                         Toast.makeText(ReportActivity.this, "No attendance logs found", Toast.LENGTH_SHORT).show();
+                    } else {
+                        populateTable(logs); // Pass logs to populateTable()
                     }
-                    adapter = new AttendanceAdapter(logs);
-                    recyclerView.setAdapter(adapter);
                 } else {
                     Toast.makeText(ReportActivity.this, "Failed to fetch data", Toast.LENGTH_SHORT).show();
                 }
@@ -63,72 +64,63 @@ public class ReportActivity extends AppCompatActivity {
         });
     }
 
-    private String extractDate(String timestamp) {
-        if (timestamp != null && !timestamp.isEmpty() && timestamp.contains("T")) {
-            return timestamp.split("T")[0]; // Extracts date portion
-        }
-        return "N/A"; // Default value for null or invalid timestamp
-    }
+    private void populateTable(List<AttendanceLog> attendanceLogs) {
+        for (AttendanceLog log : attendanceLogs) {
+            TableRow tableRow = new TableRow(this);
 
-    private String extractTime(String timestamp) {
-        if (timestamp != null && !timestamp.isEmpty()) {
-            String[] parts = timestamp.split("T"); // Splits at 'T'
-            if (parts.length > 1) {
-                return parts[1].split("\\.")[0]; // Gets time part and removes milliseconds
-            }
-        }
-        return "N/A"; // Default value if null
-    }
+            // Add Date
+            TextView dateTextView = new TextView(this);
+            dateTextView.setText(log.getDate());
+            dateTextView.setPadding(8, 8, 8, 8);
+            dateTextView.setBackground(getResources().getDrawable(R.drawable.cell_border));
+            tableRow.addView(dateTextView);
 
+            // Add Unit Code
+            TextView unitCodeTextView = new TextView(this);
+            unitCodeTextView.setText(log.getUnitCode());
+            unitCodeTextView.setPadding(8, 8, 8, 8);
+            unitCodeTextView.setBackground(getResources().getDrawable(R.drawable.cell_border));
+            tableRow.addView(unitCodeTextView);
 
+            // Add Unit Name
+            TextView unitNameTextView = new TextView(this);
+            unitNameTextView.setText(log.getUnitName());
+            unitNameTextView.setPadding(8, 8, 8, 8);
+            unitNameTextView.setBackground(getResources().getDrawable(R.drawable.cell_border));
+            unitNameTextView.setEllipsize(TextUtils.TruncateAt.END);
+            unitNameTextView.setSingleLine(true);
+            tableRow.addView(unitNameTextView);
 
-    private String calculateDuration(String punchInTime, String punchOutTime) {
-        if (punchInTime == null || punchOutTime == null || punchInTime.equals("N/A") || punchOutTime.equals("N/A")) {
-            return "N/A"; // Return if either is missing
-        }
+            // Add Punch In Time
+            TextView punchInTextView = new TextView(this);
+            punchInTextView.setText(log.getPunchInTime());
+            punchInTextView.setPadding(8, 8, 8, 8);
+            punchInTextView.setBackground(getResources().getDrawable(R.drawable.cell_border));
+            tableRow.addView(punchInTextView);
 
-        try {
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-            Date punchIn = timeFormat.parse(punchInTime);
-            Date punchOut = timeFormat.parse(punchOutTime);
+            // Add Punch Out Time
+            TextView punchOutTextView = new TextView(this);
+            punchOutTextView.setText(log.getPunchOutTime());
+            punchOutTextView.setPadding(8, 8, 8, 8);
+            punchOutTextView.setBackground(getResources().getDrawable(R.drawable.cell_border));
+            tableRow.addView(punchOutTextView);
 
-            long durationMillis = punchOut.getTime() - punchIn.getTime();
-            long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
+            // Add Duration
+            TextView durationTextView = new TextView(this);
+            durationTextView.setText(log.getDuration());
+            durationTextView.setPadding(8, 8, 8, 8);
+            durationTextView.setBackground(getResources().getDrawable(R.drawable.cell_border));
+            tableRow.addView(durationTextView);
 
-            return String.format(Locale.getDefault(), "%d hrs %d mins",
-                    durationMinutes / 60, durationMinutes % 60);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error"; // Handle parsing errors
-        }
-    }
+            // Add Status
+            TextView statusTextView = new TextView(this);
+            statusTextView.setText(log.getStatus());
+            statusTextView.setPadding(8, 8, 8, 8);
+            statusTextView.setBackground(getResources().getDrawable(R.drawable.cell_border));
+            tableRow.addView(statusTextView);
 
-
-    private String determineStatus(String duration) {
-        if ("N/A".equals(duration) || "Error".equals(duration)) {
-            return "N/A"; // Return default for missing or erroneous duration
-        }
-
-        try {
-            // Extract hours and minutes from the duration string
-            String[] parts = duration.split(" ");
-            int hours = Integer.parseInt(parts[0]); // First part is hours
-            int minutes = Integer.parseInt(parts[2]); // Third part is minutes
-
-            // Convert total duration to minutes
-            int totalMinutes = hours * 60 + minutes;
-
-            // Determine status
-            if (totalMinutes >= 90 && totalMinutes <= 180) {
-                return "Present";
-            } else if (totalMinutes < 90) {
-                return "Late";
-            } else {
-                return "Exceeds Limit"; // Optional: handle if duration exceeds 3 hours
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error"; // Handle parsing errors
+            // Add the row to the TableLayout
+            tableLayout.addView(tableRow);
         }
     }
 
@@ -165,6 +157,65 @@ public class ReportActivity extends AppCompatActivity {
         return updatedLogs;
     }
 
+    private String extractDate(String timestamp) {
+        if (timestamp != null && !timestamp.isEmpty() && timestamp.contains("T")) {
+            return timestamp.split("T")[0];
+        }
+        return "N/A";
+    }
 
+    private String extractTime(String timestamp) {
+        if (timestamp != null && !timestamp.isEmpty()) {
+            String[] parts = timestamp.split("T");
+            if (parts.length > 1) {
+                return parts[1].split("\\.")[0];
+            }
+        }
+        return "N/A";
+    }
 
+    private String calculateDuration(String punchInTime, String punchOutTime) {
+        if (punchInTime == null || punchOutTime == null || punchInTime.equals("N/A") || punchOutTime.equals("N/A")) {
+            return "N/A";
+        }
+
+        try {
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+            Date punchIn = timeFormat.parse(punchInTime);
+            Date punchOut = timeFormat.parse(punchOutTime);
+
+            long durationMillis = punchOut.getTime() - punchIn.getTime();
+            long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
+
+            return String.format(Locale.getDefault(), "%d hrs %d mins", durationMinutes / 60, durationMinutes % 60);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error";
+        }
+    }
+
+    private String determineStatus(String duration) {
+        if ("N/A".equals(duration) || "Error".equals(duration)) {
+            return "N/A";
+        }
+
+        try {
+            String[] parts = duration.split(" ");
+            int hours = Integer.parseInt(parts[0]);
+            int minutes = Integer.parseInt(parts[2]);
+
+            int totalMinutes = hours * 60 + minutes;
+
+            if (totalMinutes >= 90 && totalMinutes <= 180) {
+                return "Present";
+            } else if (totalMinutes < 90) {
+                return "Late";
+            } else {
+                return "Exceeds Limit";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error";
+        }
+    }
 }
