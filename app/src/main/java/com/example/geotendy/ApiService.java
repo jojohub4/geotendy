@@ -6,6 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("/api/login")
@@ -13,6 +14,15 @@ public interface ApiService {
 
     @POST("/api/attendance/record")
     Call<Void> recordAttendance(@Body AttendanceRecord attendanceRecord);//send attendance to the database
-    @GET("/api/attendance/logs")
-    Call<List<AttendanceLog>> fetchAttendanceLogs(); // Fetch attendance data from the database
+    @GET("api/attendance/logs")
+    Call<List<AttendanceLog>> fetchFilteredAttendance(
+            @Query("email") String email,
+            @Query("registration_no") String registrationNo,
+            @Query("fromDate") String fromDate,
+            @Query("toDate") String toDate
+    );
+
+
+
+
 }

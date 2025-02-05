@@ -32,21 +32,33 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Retrieve login session details
         SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
         boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
-        String userRole = sharedPreferences.getString("role", "unknown"); // Retrieve stored role
+        String userRole = sharedPreferences.getString("role", "unknown");
+        String regNo = sharedPreferences.getString("registration_no", "Not Found");
+        String email = sharedPreferences.getString("email", "Not Found");
 
-        // If user is already logged in, redirect to the correct dashboard
+        // Log stored values to debug missing data
+        Log.d("AppStart", "Retrieved Registration No: " + regNo);
+        Log.d("AppStart", "Retrieved Email: " + email);
+        Log.d("AppStart", "Retrieved Role: " + userRole);
+
+        // If user is logged in but registration/email is missing, force re-login
         if (isLoggedIn) {
-            redirectToDashboard(userRole); // Correctly redirect based on role
-            return;
+            if ("Not Found".equals(regNo) || "Not Found".equals(email)) {
+                Log.d("AppStart", "User data missing, forcing re-login...");
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+            } else {
+                redirectToDashboard(userRole);
+                return;
+            }
         }
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-        // Force hide the action bar
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
@@ -55,7 +67,6 @@ public class LoginActivity extends AppCompatActivity {
         edRegistration = findViewById(R.id.editTextRegistrationNo);
         btn = findViewById(R.id.button);
 
-        // Initialize API service using RetrofitClient
         apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
 
         btn.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String email = edEmail.getText().toString().trim();
                 String registrationNumber = edRegistration.getText().toString().trim();
-                String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID); // Fetch device ID
+                String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
 
                 if (email.isEmpty() || registrationNumber.isEmpty()) {
                     Toast.makeText(LoginActivity.this, "Please enter all details.", Toast.LENGTH_SHORT).show();
@@ -74,6 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
     private void saveUnitsToSharedPreferences(List<CourseUnit> courses) {
@@ -102,16 +114,19 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     if (response.body().isSuccess()) {
 
-                        // Get user role
-                        String role = response.body().getRole();
+                        // Log API response data
+                        Log.d("API Response", "Registration No: " + response.body().getRegistration_no());
+                        Log.d("API Response", "Email: " + response.body().getEmail());
+                        Log.d("API Response", "Role: " + response.body().getRole());
+                        Log.d("API Response", "Courses: " + response.body().getCourses().size());
 
                         // Store user data in SharedPreferences
                         SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("first_name", response.body().getFirst_name());
-                        editor.putString("registration_no", response.body().getRegistration_no());
-                        editor.putString("email", response.body().getEmail());
-                        editor.putString("role", role);
+                        editor.putString("registration_no", response.body().getRegistration_no()); // ✅ Ensure it's saved
+                        editor.putString("email", response.body().getEmail()); // ✅ Ensure it's saved
+                        editor.putString("role", response.body().getRole());
                         editor.putBoolean("isLoggedIn", true);
                         editor.apply();
 
@@ -120,15 +135,14 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("Debug", "Stored first_name: " + sharedPreferences.getString("first_name", "Not Found"));
                         Log.d("Debug", "Stored role: " + sharedPreferences.getString("role", "Not Found"));
 
-                        //save unit codes and unit names to sharedPreferences
-                        if ("student".equals(role)) {
+                        // Save units to SharedPreferences only for students
+                        if ("student".equals(response.body().getRole())) {
                             List<CourseUnit> courses = response.body().getCourses();
                             saveUnitsToSharedPreferences(courses);
                         }
 
-
                         // Redirect user based on role
-                        redirectToDashboard(role);
+                        redirectToDashboard(response.body().getRole());
 
                     } else {
                         Toast.makeText(LoginActivity.this, "Invalid email or registration number.", Toast.LENGTH_SHORT).show();
@@ -145,7 +159,15 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+
     private void redirectToDashboard(String role) {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
+
+        // Log stored data before redirecting
+        Log.d("Redirect", "Stored Registration No: " + sharedPreferences.getString("registration_no", "Not Found"));
+        Log.d("Redirect", "Stored Email: " + sharedPreferences.getString("email", "Not Found"));
+        Log.d("Redirect", "Stored Role: " + sharedPreferences.getString("role", "Not Found"));
+
         Intent intent;
 
         switch (role) {
@@ -166,4 +188,5 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
 }

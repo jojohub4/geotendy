@@ -1,119 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ReportActivity">
+
+
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="326dp"
+        android:layout_height="416dp"
+        android:layout_marginTop="80dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.517"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/report_container" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="328dp"
+        android:layout_height="86dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView9"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="@+id/imageView9"
+        app:layout_constraintTop_toTopOf="@+id/imageView9"
+        app:srcCompat="@drawable/rectangle" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="279dp"
+        android:layout_height="27dp"
+        android:text="Student Class Attendance Logs"
+        android:textColor="@color/white"
+        android:textSize="19dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView8"
+        app:layout_constraintEnd_toEndOf="@+id/imageView8"
+        app:layout_constraintStart_toStartOf="@+id/imageView8"
+        app:layout_constraintTop_toTopOf="@+id/imageView8" />
+
+    <!-- From Date Input -->
+
+    <ImageView
+        android:id="@+id/imageView10"
+        android:layout_width="267dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView9"
+        app:layout_constraintHorizontal_bias="0.406"
+        app:layout_constraintStart_toStartOf="@+id/imageView9"
+        app:layout_constraintTop_toBottomOf="@+id/textView10"
+        app:srcCompat="@drawable/rectangle" />
+
+    <EditText
+        android:id="@+id/etFromDate"
+        android:layout_width="177dp"
+        android:layout_height="51dp"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="MM/DD/YYYY"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView10"
+        app:layout_constraintEnd_toEndOf="@+id/imageView10"
+        app:layout_constraintHorizontal_bias="0.282"
+        app:layout_constraintStart_toStartOf="@+id/imageView10"
+        app:layout_constraintTop_toTopOf="@+id/imageView10"
+        app:layout_constraintVertical_bias="0.484" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="126dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="12dp"
+        android:text="From"
+        android:textColor="@color/black"
+        android:textSize="22dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView9"
+        app:layout_constraintHorizontal_bias="0.12"
+        app:layout_constraintStart_toStartOf="@+id/imageView9"
+        app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="To"
+        android:textColor="@color/black"
+        android:textSize="22dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView9"
+        app:layout_constraintHorizontal_bias="0.089"
+        app:layout_constraintStart_toStartOf="@+id/imageView9"
+        app:layout_constraintTop_toBottomOf="@+id/imageView10" />
+
+    <ImageView
+        android:id="@+id/imageView11"
+        android:layout_width="267dp"
+        android:layout_height="60dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView9"
+        app:layout_constraintStart_toStartOf="@+id/imageView9"
+        app:layout_constraintTop_toBottomOf="@+id/textView11"
+        app:srcCompat="@drawable/rectangle" />
+
+    <!-- To Date Input -->
+    <EditText
+        android:id="@+id/etToDate"
+        android:layout_width="177dp"
+        android:layout_height="51dp"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="MM/DD/YYYY"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView11"
+        app:layout_constraintEnd_toEndOf="@+id/imageView11"
+        app:layout_constraintHorizontal_bias="0.22"
+        app:layout_constraintStart_toStartOf="@+id/imageView11"
+        app:layout_constraintTop_toTopOf="@+id/imageView11"
+        app:layout_constraintVertical_bias="0.631" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="196dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/att_button"
+        android:text="Search Attendance Logs"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView9"
+        app:layout_constraintEnd_toEndOf="@+id/imageView9"
+        app:layout_constraintHorizontal_bias="0.776"
+        app:layout_constraintStart_toStartOf="@+id/imageView9" />
 
     <!-- HorizontalScrollView to make the table scrollable sideways -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="140dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7">
+        app:layout_constraintStart_toStartOf="parent">
 
 
-    <TableLayout
-        android:id="@+id/tableLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:padding="2dp"
-        android:stretchColumns="2">
-
-        <!-- Header Row -->
-        <TableRow
+        <TableLayout
+            android:id="@+id/tableLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/black">
+            android:layout_marginTop="8dp"
+            android:padding="2dp"
+            android:stretchColumns="2">
 
-            <TextView
+            <!-- Header Row -->
+            <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/black"
-                android:padding="8dp"
-                android:text="Date"
-                android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                android:background="@android:color/black">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/black"
-                android:padding="8dp"
-                android:text="Unit Code"
-                android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/black"
+                    android:padding="8dp"
+                    android:text="Date"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:background="@android:color/black"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:padding="8dp"
-                android:singleLine="true"
-                android:text="Unit Name"
-                android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/black"
+                    android:padding="8dp"
+                    android:text="Unit Code"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/black"
-                android:padding="8dp"
-                android:text="In"
-                android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/black"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:padding="8dp"
+                    android:singleLine="true"
+                    android:text="Unit Name"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/black"
-                android:padding="8dp"
-                android:text="Out"
-                android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/black"
+                    android:padding="8dp"
+                    android:text="In"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/black"
-                android:padding="8dp"
-                android:text="Duration"
-                android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/black"
+                    android:padding="8dp"
+                    android:text="Out"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/black"
-                android:padding="8dp"
-                android:text="Status"
-                android:textColor="@android:color/white"
-                android:textSize="14sp" />
-        </TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/black"
+                    android:padding="8dp"
+                    android:text="Duration"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
-        <!-- Dynamic Rows: Will be added programmatically -->
-    </TableLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/black"
+                    android:padding="8dp"
+                    android:text="Status"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
+            </TableRow>
+
+            <!-- Dynamic Rows: Will be added programmatically -->
+        </TableLayout>
     </HorizontalScrollView>
 
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="237dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="16dp"
-        android:text="Class Attendance Logs"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
