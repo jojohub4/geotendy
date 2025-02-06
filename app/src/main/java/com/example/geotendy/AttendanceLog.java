@@ -4,8 +4,8 @@ public class AttendanceLog {
     private String date;         // Extracted date from punchInTime
     private String punchInDate; // New field for punch-in date
     private String punchOutDate; // New field for punch-out date
-    private String unitCode;
-    private String unitName;
+    private String unit_code;
+    private String unit_name;
     private String punchInTime;  // Extracted time (HH:mm:ss)
     private String punchOutTime; // Extracted time (HH:mm:ss)
     private String duration;     // Calculated duration
@@ -21,11 +21,11 @@ public class AttendanceLog {
     public String getPunchOutDate() { return punchOutDate; }
     public void setPunchOutDate(String punchOutDate) { this.punchOutDate = punchOutDate; }
 
-    public String getUnitCode() { return unitCode; }
-    public void setUnitCode(String unitCode) { this.unitCode = unitCode; }
+    public String getUnitCode() { return unit_code; }
+    public void setUnitCode(String unitCode) { this.unit_code = unitCode; }
 
-    public String getUnitName() { return unitName; }
-    public void setUnitName(String unitName) { this.unitName = unitName; }
+    public String getUnitName() { return unit_name; }
+    public void setUnitName(String unitName) { this.unit_name = unitName; }
 
     public String getPunchInTime() { return punchInTime; }
     public void setPunchInTime(String punchInTime) { this.punchInTime = punchInTime; }

@@ -80,7 +80,7 @@ public class StudentDashboard extends AppCompatActivity {
         support.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(StudentDashboard.this,Units.class));
+                startActivity(new Intent(StudentDashboard.this,SupportActivity.class));
             }
         });
         //directing the user to the info page
@@ -88,7 +88,7 @@ public class StudentDashboard extends AppCompatActivity {
         notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(StudentDashboard.this,Units.class));
+                startActivity(new Intent(StudentDashboard.this,SupportActivity.class));
             }
         });
         //logging out

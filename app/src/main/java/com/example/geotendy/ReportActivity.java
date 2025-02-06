@@ -52,7 +52,7 @@ public class ReportActivity extends AppCompatActivity {
             if (fromDate.isEmpty() || toDate.isEmpty()) {
                 Toast.makeText(ReportActivity.this, "Please select both dates", Toast.LENGTH_SHORT).show();
             } else {
-                fetchFilteredAttendance(); // No parameters, uses global variables
+                fetchFilteredAttendance();
             }
         });
     }
@@ -62,10 +62,12 @@ public class ReportActivity extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
                 (view, year, month, dayOfMonth) -> {
-                    String selectedDate = String.format(Locale.US, "%02d/%02d/%04d", (month + 1), dayOfMonth, year); // MM/DD/YYYY format
+                    // Convert to YYYY-MM-DD format
+                    String selectedDate = String.format(Locale.US, "%04d-%02d-%02d", year, (month + 1), dayOfMonth);
+
                     if (isFromDate) {
                         fromDate = selectedDate;
-                        etFromDate.setText(selectedDate);
+                        etFromDate.setText(selectedDate); // Update input field
                     } else {
                         toDate = selectedDate;
                         etToDate.setText(selectedDate);
@@ -78,6 +80,7 @@ public class ReportActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+
     private void fetchFilteredAttendance() {
         SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
         String email = sharedPreferences.getString("email", null);
@@ -88,7 +91,6 @@ public class ReportActivity extends AppCompatActivity {
             return;
         }
 
-        // Debugging: Log the API parameters before sending request
         Log.d("API Request", "Sending Request: " +
                 "Email=" + email +
                 ", RegNo=" + registrationNo +
@@ -96,13 +98,16 @@ public class ReportActivity extends AppCompatActivity {
                 ", To=" + toDate);
 
         apiService.fetchFilteredAttendance(email, registrationNo, fromDate, toDate)
-                .enqueue(new Callback<List<AttendanceLog>>() {
+                .enqueue(new Callback<AttendanceResponse>() {
                     @Override
-                    public void onResponse(Call<List<AttendanceLog>> call, Response<List<AttendanceLog>> response) {
+                    public void onResponse(Call<AttendanceResponse> call, Response<AttendanceResponse> response) {
                         Log.d("API Response", "Response Code: " + response.code());
 
                         if (response.isSuccessful() && response.body() != null) {
-                            List<AttendanceLog> logs = response.body();
+                            List<AttendanceLog> logs = response.body().getLogs(); // Correctly extract logs
+
+                            Log.d("API Response", "Received logs count: " + logs.size());
+
                             if (logs.isEmpty()) {
                                 Toast.makeText(ReportActivity.this, "No attendance logs found", Toast.LENGTH_SHORT).show();
                             } else {
@@ -115,20 +120,32 @@ public class ReportActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<List<AttendanceLog>> call, Throwable t) {
+                    public void onFailure(Call<AttendanceResponse> call, Throwable t) {
                         Toast.makeText(ReportActivity.this, "Error fetching data: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.e("API Failure", "Request failed: " + t.getMessage());
                     }
                 });
     }
 
-
     private void populateTable(List<AttendanceLog> attendanceLogs) {
-        tableLayout.removeAllViews(); // Clear previous data but keep headers
+        tableLayout.removeAllViews(); // Clear previous data
 
         for (AttendanceLog log : attendanceLogs) {
             TableRow tableRow = new TableRow(this);
 
+            // Set row background color based on status
+            String status = log.getStatus();
+            if ("Present".equalsIgnoreCase(status)) {
+                tableRow.setBackgroundColor(getResources().getColor(R.color.green)); // Green for Present
+            } else if ("Late".equalsIgnoreCase(status)) {
+                tableRow.setBackgroundColor(getResources().getColor(R.color.orange)); // Orange for Late
+            } else if ("Absent".equalsIgnoreCase(status)) {
+                tableRow.setBackgroundColor(getResources().getColor(R.color.red)); // Red for Absent
+            } else {
+                tableRow.setBackgroundColor(getResources().getColor(R.color.gray)); // Default color
+            }
+
+            // Add columns
             addTextViewToRow(tableRow, log.getDate());
             addTextViewToRow(tableRow, log.getUnitCode());
             addTextViewToRow(tableRow, log.getUnitName());
@@ -140,6 +157,7 @@ public class ReportActivity extends AppCompatActivity {
             tableLayout.addView(tableRow);
         }
     }
+
 
     private void addTextViewToRow(TableRow row, String text) {
         TextView textView = new TextView(this);

@@ -15,12 +15,13 @@ public interface ApiService {
     @POST("/api/attendance/record")
     Call<Void> recordAttendance(@Body AttendanceRecord attendanceRecord);//send attendance to the database
     @GET("api/attendance/logs")
-    Call<List<AttendanceLog>> fetchFilteredAttendance(
+    Call<AttendanceResponse> fetchFilteredAttendance(
             @Query("email") String email,
             @Query("registration_no") String registrationNo,
             @Query("fromDate") String fromDate,
             @Query("toDate") String toDate
     );
+
 
 
 

@@ -11,4 +11,8 @@
     <color name="blue">#3533CD</color>
     <color name="purple">#9C27B0</color>
     <color name="blue_num">#5E17EB</color>
+    <color name="green">#4CAF50</color> <!-- Present -->
+    <color name="orange">#FF9800</color> <!-- Late -->
+    <color name="red">#F44336</color> <!-- Absent -->
+    <color name="gray">#9E9E9E</color> <!-- Default -->
 </resources>
