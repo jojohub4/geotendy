@@ -27,6 +27,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".LecturerClocking"
+            android:exported="false" />
+        <activity
+            android:name=".LecturerAttendanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LecturerUnitsActivity"
+            android:exported="false" />
+        <activity
             android:name=".SupportActivity"
             android:exported="false" />
         <activity

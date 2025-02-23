@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
@@ -31,13 +30,14 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             Log.d(TAG, "Geofence entered");
-            editor.putBoolean("isInGeofence", true); // Update flag
-            editor.apply();
+            editor.putBoolean("isInGeofence", true);
         } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
             Log.d(TAG, "Geofence exited");
-            editor.putBoolean("isInGeofence", false); // Update flag
-            editor.apply();
+            editor.putBoolean("isInGeofence", false);
         }
+        editor.apply();
+
+        boolean isInGeofence = sharedPreferences.getBoolean("isInGeofence", false);
+        Log.d(TAG, "Geofence status updated: " + isInGeofence);
     }
 }
-

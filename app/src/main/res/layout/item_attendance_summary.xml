@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="394dp"
+        android:layout_height="213dp"
+        android:layout_margin="8dp"
+        android:padding="12dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Student Name -->
+            <TextView
+                android:id="@+id/text_student_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Student Name"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- Student Registration Number -->
+            <TextView
+                android:id="@+id/text_registration_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reg No: DSE-01-8300/2023"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+            <!-- Attendance Status -->
+            <TextView
+                android:id="@+id/text_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total: 0"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_present"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Present: 0"
+                android:textSize="16sp"
+                android:textColor="#008000"
+                android:paddingTop="4dp" />
+
+            <TextView
+                android:id="@+id/text_absent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Absent: 0"
+                android:textSize="16sp"
+                android:textColor="#FF0000"
+                android:paddingTop="4dp" />
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

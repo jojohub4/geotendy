@@ -10,6 +10,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.geotendy.LoginResponse;
+import com.example.geotendy.LoginRequest;
+
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -81,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                verifyUser(email, registrationNumber, deviceId);
+                verifyUser(email, registrationNumber);
             }
         });
     }
@@ -104,51 +108,51 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply(); // Commit the changes
     }
 
-    private void verifyUser(String email, String registrationNumber, String deviceId) {
-        LoginRequest request = new LoginRequest(email, registrationNumber, deviceId);
+    private void verifyUser(String email, String registrationNumber) {
+        LoginRequest request = new LoginRequest(email, registrationNumber);
         Call<LoginResponse> call = apiService.loginUser(request);
 
         call.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    if (response.body().isSuccess()) {
+                    Log.d("API Response", "Registration No: " + response.body().getRegistration_no());
+                    Log.d("API Response", "Email: " + response.body().getEmail());
+                    Log.d("API Response", "Role: " + response.body().getRole());
 
-                        // Log API response data
-                        Log.d("API Response", "Registration No: " + response.body().getRegistration_no());
-                        Log.d("API Response", "Email: " + response.body().getEmail());
-                        Log.d("API Response", "Role: " + response.body().getRole());
-                        Log.d("API Response", "Courses: " + response.body().getCourses().size());
+                    // Get shared preferences
+                    SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                        // Store user data in SharedPreferences
-                        SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("first_name", response.body().getFirst_name());
-                        editor.putString("registration_no", response.body().getRegistration_no()); // ✅ Ensure it's saved
-                        editor.putString("email", response.body().getEmail()); // ✅ Ensure it's saved
-                        editor.putString("role", response.body().getRole());
-                        editor.putBoolean("isLoggedIn", true);
-                        editor.apply();
+                    // Store common user details (both student & lecturer)
+                    editor.putString("first_name", response.body().getFirst_name());
+                    editor.putString("registration_no", response.body().getRegistration_no());
+                    editor.putString("email", response.body().getEmail());
+                    editor.putString("role", response.body().getRole());
+                    editor.putBoolean("isLoggedIn", true);
 
-                        Log.d("Debug", "Stored registration_no: " + sharedPreferences.getString("registration_no", "Not Found"));
-                        Log.d("Debug", "Stored email: " + sharedPreferences.getString("email", "Not Found"));
-                        Log.d("Debug", "Stored first_name: " + sharedPreferences.getString("first_name", "Not Found"));
-                        Log.d("Debug", "Stored role: " + sharedPreferences.getString("role", "Not Found"));
-
-                        // Save units to SharedPreferences only for students
-                        if ("student".equals(response.body().getRole())) {
-                            List<CourseUnit> courses = response.body().getCourses();
-                            saveUnitsToSharedPreferences(courses);
-                        }
-
-                        // Redirect user based on role
-                        redirectToDashboard(response.body().getRole());
-
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Invalid email or registration number.", Toast.LENGTH_SHORT).show();
+                    // ✅ Store additional lecturer-specific details
+                    if ("lecturer".equals(response.body().getRole())) {
+                        Log.d("API Response", "Lecturer login detected");
+                        editor.putString("lecturer_email", response.body().getEmail());
+                        editor.putString("lecturer_reg_no", response.body().getRegistration_no());
                     }
+
+                    // ✅ Store additional student-specific details (only if role is student)
+                    if ("student".equals(response.body().getRole()) && response.body().getCourses() != null) {
+                        Log.d("API Response", "Saving student courses...");
+                        saveUnitsToSharedPreferences(response.body().getCourses());
+                    } else {
+                        Log.d("API Response", "No courses found (Lecturer/Admin)");
+                    }
+
+                    // Apply changes
+                    editor.apply();
+
+                    // Redirect to the correct dashboard
+                    redirectToDashboard(response.body().getRole());
                 } else {
-                    Toast.makeText(LoginActivity.this, "Server error. Please try again later.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Invalid email or registration number.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -160,10 +164,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+
     private void redirectToDashboard(String role) {
         SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
 
-        // Log stored data before redirecting
+        // Debug log: Ensure correct data is stored
         Log.d("Redirect", "Stored Registration No: " + sharedPreferences.getString("registration_no", "Not Found"));
         Log.d("Redirect", "Stored Email: " + sharedPreferences.getString("email", "Not Found"));
         Log.d("Redirect", "Stored Role: " + sharedPreferences.getString("role", "Not Found"));
