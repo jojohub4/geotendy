@@ -22,24 +22,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Student Name -->
-            <TextView
-                android:id="@+id/text_student_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Student Name"
-                android:textColor="#333333"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <!-- Student Registration Number -->
-            <TextView
-                android:id="@+id/text_registration_no"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reg No: DSE-01-8300/2023"
-                android:textColor="#666666"
-                android:textSize="14sp" />
 
             <!-- Attendance Status -->
             <TextView

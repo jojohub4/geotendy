@@ -23,13 +23,16 @@ public interface ApiService {
 
     @GET("/api/lecturer/units")
     Call<LecturerUnitsResponse> getLecturerUnits(@Query("email") String email);
-    @GET("/api/lecturer/attendance")
-      Call<AttendanceSummaryResponse> getLecturerAttendance(
-            @Query("unit_code") String unitCode,  // Use `unit_code` instead of `unitCode`
-            @Query("unit_name") String unitName   // Use `unit_name` instead of `unitName`
-    );
 
-    @POST("/api/lecturer/clock")
-    Call<ApiResponse> lecturerClocking(@Body LecturerClockingRequest request);
+    // ✅ Unified clocking endpoint for both admin and lecturer
+    @POST("/api/clocking")
+    Call<ApiResponse> clocking(@Body ClockingRequest request);
+
+    @GET("/api/lecturer/attendance")
+    Call<LecturerAttendanceResponse> getLecturerAttendance(
+            @Query("email") String email,
+            @Query("fromDate") String fromDate,
+            @Query("toDate") String toDate
+    );
 
 }

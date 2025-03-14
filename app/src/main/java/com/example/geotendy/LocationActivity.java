@@ -3,6 +3,7 @@ package com.example.geotendy;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -29,19 +31,21 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
     private static final String TAG = "LocationActivity";
     private static final int REQUEST_LOCATION_PERMISSION = 101;
-    private static final LatLng REQUIRED_LOCATION = new LatLng(-1.153868933830619, 36.96256212002725); // Replace with actual required location
-    private static final float REQUIRED_RADIUS = 250; // Radius in meters
+    private static final String PREFS_NAME = "GeofenceSettings";
 
     private GeofencingClient geofencingClient;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private GoogleMap mMap;
     private PendingIntent geofencePendingIntent;
+    private SharedPreferences sharedPreferences;
+    private Circle geofenceCircle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
 
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         geofencingClient = LocationServices.getGeofencingClient(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -50,7 +54,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
             mapFragment.getMapAsync(this);
         }
 
-        // Request permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_LOCATION_PERMISSION);
@@ -62,56 +65,52 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add marker and circle for the required location
-        mMap.addMarker(new MarkerOptions().position(REQUIRED_LOCATION).title("Required Location"));
-        mMap.addCircle(new CircleOptions()
-                .center(REQUIRED_LOCATION)
-                .radius(REQUIRED_RADIUS)
-                .strokeColor(0x220000FF)
-                .fillColor(0x220000FF)
-                .strokeWidth(2));
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(REQUIRED_LOCATION, 15));
-
-        showCurrentLocation();
+        loadGeofenceData(); // ✅ Always load the latest location data
     }
 
-    private void showCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
-                if (location != null) {
-                    LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+    private void loadGeofenceData() {
+        LatLng requiredLocation = getSavedGeofenceLocation();
+        float radius = getSavedRadius();
 
-                    mMap.addMarker(new MarkerOptions().position(currentLocation).title("Your Location"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+        // ✅ Debugging: Log the loaded values
+        Log.d(TAG, "Loaded Geofence: Lat=" + requiredLocation.latitude + ", Lon=" + requiredLocation.longitude + ", Radius=" + radius);
 
-                    float[] distance = new float[1];
-                    android.location.Location.distanceBetween(
-                            location.getLatitude(), location.getLongitude(),
-                            REQUIRED_LOCATION.latitude, REQUIRED_LOCATION.longitude,
-                            distance);
+        updateMap(requiredLocation, radius);
+    }
 
-                    if (distance[0] <= REQUIRED_RADIUS) {
-                        Toast.makeText(this, "You are in the required location!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "You are not in the required location.", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Unable to get current location", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+    private void updateMap(LatLng location, float radius) {
+        mMap.clear();
+
+        mMap.addMarker(new MarkerOptions().position(location).title("Required Location"));
+        geofenceCircle = mMap.addCircle(new CircleOptions()
+                .center(location)
+                .radius(radius)
+                .strokeColor(0x550000FF)
+                .fillColor(0x220000FF)
+                .strokeWidth(3));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+    }
+
+    private LatLng getSavedGeofenceLocation() {
+        double lat = Double.parseDouble(sharedPreferences.getString("latitude", "-1.188968933830619"));
+        double lon = Double.parseDouble(sharedPreferences.getString("longitude", "36.96256212002725"));
+        return new LatLng(lat, lon);
+    }
+
+    private float getSavedRadius() {
+        return Float.parseFloat(sharedPreferences.getString("radius", "250"));
     }
 
     private void createGeofence() {
+        LatLng requiredLocation = getSavedGeofenceLocation();
+        float radius = getSavedRadius();
+
         geofencingClient.removeGeofences(getGeofencePendingIntent())
                 .addOnCompleteListener(task -> {
-                    Log.d(TAG, "Old geofence removed. Adding new one.");
-
                     Geofence geofence = new Geofence.Builder()
                             .setRequestId("required_location")
-                            .setCircularRegion(REQUIRED_LOCATION.latitude, REQUIRED_LOCATION.longitude, REQUIRED_RADIUS)
+                            .setCircularRegion(requiredLocation.latitude, requiredLocation.longitude, radius)
                             .setExpirationDuration(Geofence.NEVER_EXPIRE)
                             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                             .build();
@@ -136,18 +135,5 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
         geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         return geofencePendingIntent;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_LOCATION_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                createGeofence();
-                showCurrentLocation();
-            } else {
-                Toast.makeText(this, "Location permission is required for geofencing", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 }

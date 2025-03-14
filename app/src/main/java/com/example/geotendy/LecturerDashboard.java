@@ -84,11 +84,11 @@ public class LecturerDashboard extends AppCompatActivity {
             }
         });
         //directing the user to the info page
-        CardView notification = findViewById(R.id.cardInfo);
+        CardView notification = findViewById(R.id.cardReports);
         notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LecturerDashboard.this,SupportActivity.class));
+                startActivity(new Intent(LecturerDashboard.this, LecturerReportActivity.class));
             }
         });
         //logging out

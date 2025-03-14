@@ -2,6 +2,7 @@ package com.example.geotendy;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,11 +37,9 @@ public class LecturerUnitsAdapter extends RecyclerView.Adapter<LecturerUnitsAdap
         holder.unitName.setText(unit.getUnitName());
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, LecturerAttendanceActivity.class);
-            intent.putExtra("unitCode", unit.getUnitCode());
-            intent.putExtra("unitName", unit.getUnitName());
-            context.startActivity(intent);
+            Log.d("LecturerUnitsAdapter", "Unit clicked: " + unit.getUnitName());
         });
+
     }
 
 

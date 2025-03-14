@@ -27,10 +27,25 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".LecturerClocking"
+            android:name=".AdminReportActivity"
             android:exported="false" />
         <activity
-            android:name=".LecturerAttendanceActivity"
+            android:name=".LecturerReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminClocking"
+            android:exported="false" />
+        <activity
+            android:name=".MapSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminLocationUpdateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminDashboard"
+            android:exported="false" />
+        <activity
+            android:name=".LecturerClocking"
             android:exported="false" />
         <activity
             android:name=".LecturerUnitsActivity"
@@ -40,9 +55,6 @@
             android:exported="false" />
         <activity
             android:name=".LecturerDashboard"
-            android:exported="false" />
-        <activity
-            android:name=".AdminDashboard"
             android:exported="false" />
         <activity
             android:name=".ReportActivity"

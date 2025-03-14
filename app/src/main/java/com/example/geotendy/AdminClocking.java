@@ -2,7 +2,6 @@ package com.example.geotendy;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -15,12 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
@@ -30,30 +25,29 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LecturerClocking extends AppCompatActivity {
-    private static final String TAG = "LecturerClocking";
+public class AdminClocking extends AppCompatActivity {
+    private static final String TAG = "AdminClocking";
     private Button clockInButton, clockOutButton;
     private ApiService apiService;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private SharedPreferences sharedPreferences;
+    private static final float REQUIRED_RADIUS = 250;
 
-    private static final float REQUIRED_RADIUS = 250; // Geofence radius in meters
-
-    private String lecturerEmail, registrationNo, firstName;
+    private String adminEmail, registrationNo, firstName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lecturer_clocking);
+        setContentView(R.layout.activity_admin_clocking);
 
         apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
         sharedPreferences = getSharedPreferences("GeofenceSettings", MODE_PRIVATE);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        clockInButton = findViewById(R.id.button4);
-        clockOutButton = findViewById(R.id.button5);
+        clockInButton = findViewById(R.id.buttonAdminClockIn);
+        clockOutButton = findViewById(R.id.buttonAdminClockOut);
 
-        loadLecturerDetails();
+        loadAdminDetails();
 
         clockInButton.setOnClickListener(v -> {
             Log.d(TAG, "Clock In button clicked!");
@@ -66,42 +60,13 @@ public class LecturerClocking extends AppCompatActivity {
         });
     }
 
-    /**
-     * Retrieves the latest geofence location set by the admin.
-     */
     private LatLng getSavedGeofenceLocation() {
-        double lat = Double.parseDouble(sharedPreferences.getString("latitude", "-1.153868933830619"));
+        double lat = Double.parseDouble(sharedPreferences.getString("latitude", "-1.188968933830619"));
         double lon = Double.parseDouble(sharedPreferences.getString("longitude", "36.96256212002725"));
         return new LatLng(lat, lon);
     }
 
-    /**
-     * Checks if GPS is enabled before verifying location.
-     */
     private void checkLocationAndClock(String action) {
-        LocationRequest locationRequest = LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
-        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
-
-        settingsClient.checkLocationSettings(builder.build())
-                .addOnSuccessListener(locationSettingsResponse -> verifyLocationAndClock(action))
-                .addOnFailureListener(e -> {
-                    if (e instanceof ResolvableApiException) {
-                        try {
-                            ((ResolvableApiException) e).startResolutionForResult(this, 101);
-                        } catch (IntentSender.SendIntentException ex) {
-                            Log.e(TAG, "Error enabling location services", ex);
-                        }
-                    } else {
-                        Toast.makeText(this, "Please enable GPS for attendance", Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
-
-    /**
-     * Retrieves the current location and checks if it's within the geofence.
-     */
-    private void verifyLocationAndClock(String action) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
             return;
@@ -126,9 +91,6 @@ public class LecturerClocking extends AppCompatActivity {
         });
     }
 
-    /**
-     * Checks if the lecturer's current location is within the required geofence radius.
-     */
     private boolean isWithinGeofence(android.location.Location location, LatLng savedLocation) {
         float[] distance = new float[1];
         android.location.Location.distanceBetween(
@@ -139,45 +101,67 @@ public class LecturerClocking extends AppCompatActivity {
         return distance[0] <= REQUIRED_RADIUS;
     }
 
-    /**
-     * Loads lecturer details from SharedPreferences.
-     */
-    private void loadLecturerDetails() {
+    private void loadAdminDetails() {
         SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
 
-        lecturerEmail = sharedPreferences.getString("lecturer_email", null);
-        registrationNo = sharedPreferences.getString("lecturer_reg_no", null);
-        firstName = sharedPreferences.getString("first_name", null);
+        adminEmail = sharedPreferences.getString("admin_email", null);
+        registrationNo = sharedPreferences.getString("admin_reg_no", null);
+        firstName = sharedPreferences.getString("admin_name", null);
 
-        if (lecturerEmail == null || registrationNo == null || firstName == null) {
-            Toast.makeText(this, "Error: Lecturer details not found. Please log in again.", Toast.LENGTH_LONG).show();
-            Log.e(TAG, "Lecturer details missing in SharedPreferences");
-            finish();
+        // ✅ Log to check if values are missing
+        Log.d("AdminClocking", "Admin Details Loaded: Email=" + adminEmail + ", Reg No=" + registrationNo + ", Name=" + firstName);
+
+        if (adminEmail == null || registrationNo == null || firstName == null) {
+            Toast.makeText(this, "Error: Admin details not found. Please log in again.", Toast.LENGTH_LONG).show();
+            Log.e("AdminClocking", "Admin details missing in SharedPreferences");
+            finish(); // Close activity if details are missing
         }
     }
 
-    /**
-     * Sends clocking request to the API.
-     */
+
+
     private void sendClockingRequest(String action) {
         long timestamp = System.currentTimeMillis();
-        ClockingRequest request = new ClockingRequest(registrationNo, lecturerEmail, firstName, "lecturer", action, timestamp);
+
+        // 🔍 Debug: Check if values are null
+        Log.d("AdminClocking", "Admin Details - Email: " + adminEmail + ", Reg No: " + registrationNo + ", Name: " + firstName);
+
+        if (adminEmail == null || registrationNo == null || firstName == null) {
+            Log.e("AdminClocking", "Missing required fields!");
+            Toast.makeText(this, "Admin details are missing. Please log in again.", Toast.LENGTH_LONG).show();
+            return; // Stop the function if details are missing
+        }
+
+        ClockingRequest request = new ClockingRequest(registrationNo, adminEmail, firstName, "admin",action, timestamp);
+
+        // ✅ Log API request
+        Log.d("AdminClocking", "Sending API Request: " + new Gson().toJson(request));
 
         apiService.clocking(request).enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(LecturerClocking.this, "Clocking successful", Toast.LENGTH_SHORT).show();
+                    Log.d("AdminClocking", "Clocking successful: " + response.body().getMessage());
+                    Toast.makeText(AdminClocking.this, "Clocking successful", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(LecturerClocking.this, "Clocking failed", Toast.LENGTH_SHORT).show();
+                    try {
+                        String errorResponse = response.errorBody().string();
+                        Log.e("AdminClocking", "Clocking failed: " + errorResponse);
+                        Toast.makeText(AdminClocking.this, "Clocking failed: " + errorResponse, Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        Log.e("AdminClocking", "Error reading response: " + e.getMessage());
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
-                Toast.makeText(LecturerClocking.this, "Clocking request failed", Toast.LENGTH_SHORT).show();
+                Log.e("AdminClocking", "API Request Failed: " + t.getMessage());
+                Toast.makeText(AdminClocking.this, "Clocking request failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+
 
 }

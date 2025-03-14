@@ -1,41 +1,34 @@
 package com.example.geotendy;
 
+import com.google.gson.annotations.SerializedName;
+
 public class AttendanceLog {
-    private String date;         // Extracted date from punchInTime
-    private String punchInDate; // New field for punch-in date
-    private String punchOutDate; // New field for punch-out date
-    private String unit_code;
-    private String unit_name;
-    private String punchInTime;  // Extracted time (HH:mm:ss)
-    private String punchOutTime; // Extracted time (HH:mm:ss)
-    private String duration;     // Calculated duration
-    private String status;       // Calculated status
+    @SerializedName("date")
+    private String date;
 
-    // Getters and Setters
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
+    @SerializedName("unitCode")
+    private String unitCode;
 
-    public String getPunchInDate() { return punchInDate; }
-    public void setPunchInDate(String punchInDate) { this.punchInDate = punchInDate; }
+    @SerializedName("unitName")
+    private String unitName;
 
-    public String getPunchOutDate() { return punchOutDate; }
-    public void setPunchOutDate(String punchOutDate) { this.punchOutDate = punchOutDate; }
+    @SerializedName("punchInTime")
+    private String punchInTime;
 
-    public String getUnitCode() { return unit_code; }
-    public void setUnitCode(String unitCode) { this.unit_code = unitCode; }
+    @SerializedName("punchOutTime")
+    private String punchOutTime;
 
-    public String getUnitName() { return unit_name; }
-    public void setUnitName(String unitName) { this.unit_name = unitName; }
+    @SerializedName("duration")
+    private String duration;
 
-    public String getPunchInTime() { return punchInTime; }
-    public void setPunchInTime(String punchInTime) { this.punchInTime = punchInTime; }
+    @SerializedName("status")
+    private String status;
 
-    public String getPunchOutTime() { return punchOutTime; }
-    public void setPunchOutTime(String punchOutTime) { this.punchOutTime = punchOutTime; }
-
-    public String getDuration() { return duration; }
-    public void setDuration(String duration) { this.duration = duration; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getDate() { return date != null ? date : "N/A"; }
+    public String getUnitCode() { return unitCode != null ? unitCode : "N/A"; }
+    public String getUnitName() { return unitName != null ? unitName : "N/A"; }
+    public String getPunchInTime() { return punchInTime != null ? punchInTime : "N/A"; }
+    public String getPunchOutTime() { return punchOutTime != null ? punchOutTime : "N/A"; }
+    public String getDuration() { return duration != null ? duration : "N/A"; }
+    public String getStatus() { return status != null ? status : "N/A"; }
 }

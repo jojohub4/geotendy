@@ -26,11 +26,9 @@ import retrofit2.Response;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Date;
 
-
-public class ReportActivity extends AppCompatActivity {
+public class LecturerReportActivity extends AppCompatActivity {
     private TableLayout tableLayout;
     private ApiService apiService;
     private EditText etFromDate, etToDate;
@@ -40,13 +38,13 @@ public class ReportActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_report);
+        setContentView(R.layout.activity_lecturer_report);
 
         // Initialize UI elements
         tableLayout = findViewById(R.id.tableLayout);
         etFromDate = findViewById(R.id.etFromDate);
         etToDate = findViewById(R.id.etToDate);
-        btnFetchAttendance = findViewById(R.id.button2);
+        btnFetchAttendance = findViewById(R.id.buttonFetch);
 
         // Initialize API service
         apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
@@ -55,12 +53,12 @@ public class ReportActivity extends AppCompatActivity {
         etFromDate.setOnClickListener(v -> showDatePickerDialog(true));
         etToDate.setOnClickListener(v -> showDatePickerDialog(false));
 
-        // Set up button click listener
+        // Fetch attendance data on button click
         btnFetchAttendance.setOnClickListener(v -> {
             if (fromDate.isEmpty() || toDate.isEmpty()) {
-                Toast.makeText(ReportActivity.this, "Please select both dates", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LecturerReportActivity.this, "Please select both dates", Toast.LENGTH_SHORT).show();
             } else {
-                fetchFilteredAttendance();
+                fetchLecturerAttendance();
             }
         });
     }
@@ -70,12 +68,10 @@ public class ReportActivity extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
                 (view, year, month, dayOfMonth) -> {
-                    // Convert to YYYY-MM-DD format
                     String selectedDate = String.format(Locale.US, "%04d-%02d-%02d", year, (month + 1), dayOfMonth);
-
                     if (isFromDate) {
                         fromDate = selectedDate;
-                        etFromDate.setText(selectedDate); // Update input field
+                        etFromDate.setText(selectedDate);
                     } else {
                         toDate = selectedDate;
                         etToDate.setText(selectedDate);
@@ -88,76 +84,46 @@ public class ReportActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-
-    private void fetchFilteredAttendance() {
+    private void fetchLecturerAttendance() {
         SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
-        String email = sharedPreferences.getString("email", null);
-        String registrationNo = sharedPreferences.getString("registration_no", null);
+        String email = sharedPreferences.getString("lecturer_email", null);
 
-        if (email == null || registrationNo == null) {
-            Toast.makeText(this, "User data missing, please log in again", Toast.LENGTH_SHORT).show();
+        if (email == null) {
+            Toast.makeText(this, "Lecturer data missing, please log in again", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Log.d("API Request", "Sending Request: " +
-                "Email=" + email +
-                ", RegNo=" + registrationNo +
-                ", From=" + fromDate +
-                ", To=" + toDate);
+        Log.d("API Request", "Fetching logs for: " + email + " from " + fromDate + " to " + toDate);
 
-        apiService.fetchFilteredAttendance(email, registrationNo, fromDate, toDate)
-                .enqueue(new Callback<AttendanceResponse>() {
+        apiService.getLecturerAttendance(email, fromDate, toDate)
+                .enqueue(new Callback<LecturerAttendanceResponse>() {
                     @Override
-                    public void onResponse(Call<AttendanceResponse> call, Response<AttendanceResponse> response) {
-                        Log.d("API Response", "Response Code: " + response.code());
-
+                    public void onResponse(Call<LecturerAttendanceResponse> call, Response<LecturerAttendanceResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            Log.d("API Response", "Full Response: " + new Gson().toJson(response.body()));  // 👈 Log full response
-
-                            List<AttendanceLog> logs = response.body().getLogs(); // Extract logs
-                            Log.d("API Response", "Received logs count: " + logs.size());
-
-                            if (logs.isEmpty()) {
-                                Toast.makeText(ReportActivity.this, "No attendance logs found", Toast.LENGTH_SHORT).show();
-                            } else {
-                                populateTable(logs);
-                            }
+                            populateTable(response.body().getLogs());
                         } else {
-                            Log.e("API Error", "Response error: " + response.message());
-                            Toast.makeText(ReportActivity.this, "Failed to fetch data", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LecturerReportActivity.this, "No records found", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<AttendanceResponse> call, Throwable t) {
-                        Toast.makeText(ReportActivity.this, "Error fetching data: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.e("API Failure", "Request failed: " + t.getMessage());
+                    public void onFailure(Call<LecturerAttendanceResponse> call, Throwable t) {
+                        Toast.makeText(LecturerReportActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void populateTable(List<AttendanceLog> attendanceLogs) {
-        tableLayout.removeViews(1, Math.max(0, tableLayout.getChildCount() - 1)); // Clears only dynamic rows
+    private void populateTable(List<LecturerAttendanceLog> logs) {
+        tableLayout.removeViews(1, Math.max(0, tableLayout.getChildCount() - 1));
 
-        for (AttendanceLog log : attendanceLogs) {
+        for (LecturerAttendanceLog log : logs) {
             TableRow tableRow = new TableRow(this);
-
-            
-
-            // Add columns
             addTextViewToRow(tableRow, log.getDate());
-            addTextViewToRow(tableRow, log.getUnitCode());
-            addTextViewToRow(tableRow, log.getUnitName());
-            addTextViewToRow(tableRow, log.getPunchInTime());
-            addTextViewToRow(tableRow, log.getPunchOutTime());
-            addTextViewToRow(tableRow, log.getDuration());
-            addTextViewToRow(tableRow, log.getStatus());
-
+            addTextViewToRow(tableRow, log.getTime());
+            addTextViewToRow(tableRow, log.getAction());
             tableLayout.addView(tableRow);
         }
     }
-
-
 
     private void addTextViewToRow(TableRow row, String text) {
         TextView textView = new TextView(this);
@@ -176,7 +142,6 @@ public class ReportActivity extends AppCompatActivity {
 
     }
 
-    // 🔹 Helper method to format date from "2025-02-21T00:00:00.000Z" to "2025-02-21"
     private String formatDate(String isoDate) {
         try {
             SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);

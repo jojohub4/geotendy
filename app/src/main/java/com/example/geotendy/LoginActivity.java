@@ -131,6 +131,16 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString("role", response.body().getRole());
                     editor.putBoolean("isLoggedIn", true);
 
+                    // ✅ Store additional Admin-specific details
+                    if ("admin".equals(response.body().getRole())) {
+                        Log.d("API Response", "Admin login detected");
+                        editor.putString("admin_email", response.body().getEmail());
+                        editor.putString("admin_reg_no", response.body().getRegistration_no());
+                        editor.putString("admin_name", response.body().getFirst_name());
+                        editor.putBoolean("isAdminLoggedIn", true);
+                    }
+
+
                     // ✅ Store additional lecturer-specific details
                     if ("lecturer".equals(response.body().getRole())) {
                         Log.d("API Response", "Lecturer login detected");

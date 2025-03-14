@@ -38,8 +38,14 @@ import java.util.List;
 public class Units extends AppCompatActivity {
 
     private static final String TAG = "UnitsActivity";
-    private static final int REQUEST_LOCATION_PERMISSION = 101;
-    private static final LatLng REQUIRED_LOCATION = new LatLng(-1.153868933830619, 36.96256212002725); // Set required location
+    static final int REQUEST_LOCATION_PERMISSION = 101;
+    private LatLng getRequiredLocation() {
+        SharedPreferences sharedPreferences = getSharedPreferences("GeofenceSettings", MODE_PRIVATE);
+        double lat = Double.parseDouble(sharedPreferences.getString("latitude", "-1.188968933830619"));
+        double lon = Double.parseDouble(sharedPreferences.getString("longitude", "36.96256212002725"));
+        return new LatLng(lat, lon);
+    }
+
     private static final float REQUIRED_RADIUS = 250; // Radius in meters
 
     private RecyclerView recyclerView;
@@ -139,13 +145,17 @@ public class Units extends AppCompatActivity {
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null) {
                     float[] distance = new float[1];
+
+                    LatLng updatedLocation = getRequiredLocation();  // ✅ Get admin-updated location
+
                     android.location.Location.distanceBetween(
                             location.getLatitude(), location.getLongitude(),
-                            REQUIRED_LOCATION.latitude, REQUIRED_LOCATION.longitude,
+                            updatedLocation.latitude, updatedLocation.longitude,  // ✅ Use updated geofence
                             distance
                     );
 
                     boolean isInGeofence = distance[0] <= REQUIRED_RADIUS;
+
                     SharedPreferences.Editor editor = getSharedPreferences("UserProfile", Context.MODE_PRIVATE).edit();
                     editor.putBoolean("isInGeofence", isInGeofence);
                     editor.apply();
@@ -156,18 +166,21 @@ public class Units extends AppCompatActivity {
                         Toast.makeText(this, "You are outside the required location. Attendance not allowed.", Toast.LENGTH_LONG).show();
                     }
                 }
-            });
+            }).addOnFailureListener(e -> Log.e(TAG, "Failed to fetch location: " + e.getMessage()));
         }
     }
 
+
     private void createGeofence() {
+        LatLng location = getRequiredLocation(); // Get updated location
+
         geofencingClient.removeGeofences(getGeofencePendingIntent())
                 .addOnCompleteListener(task -> {
                     Log.d(TAG, "Old geofence removed. Adding new one.");
 
                     Geofence geofence = new Geofence.Builder()
                             .setRequestId("required_location")
-                            .setCircularRegion(REQUIRED_LOCATION.latitude, REQUIRED_LOCATION.longitude, REQUIRED_RADIUS)
+                            .setCircularRegion(location.latitude, location.longitude, REQUIRED_RADIUS)
                             .setExpirationDuration(Geofence.NEVER_EXPIRE)
                             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                             .build();
@@ -184,6 +197,7 @@ public class Units extends AppCompatActivity {
                     }
                 });
     }
+
 
     private PendingIntent getGeofencePendingIntent() {
         if (geofencePendingIntent != null) {
