@@ -33,6 +33,8 @@ android {
 
 dependencies {
 
+    implementation (libs.mail.android.mail)
+    implementation (libs.android.activation)
     implementation (libs.play.services.maps)
     implementation (libs.play.services.location)
     implementation (libs.biometric)

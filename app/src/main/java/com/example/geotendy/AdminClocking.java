@@ -123,21 +123,9 @@ public class AdminClocking extends AppCompatActivity {
     private void sendClockingRequest(String action) {
         long timestamp = System.currentTimeMillis();
 
-        // 🔍 Debug: Check if values are null
-        Log.d("AdminClocking", "Admin Details - Email: " + adminEmail + ", Reg No: " + registrationNo + ", Name: " + firstName);
+        AdminClockingRequest request = new AdminClockingRequest(registrationNo, adminEmail, firstName, action, timestamp);
 
-        if (adminEmail == null || registrationNo == null || firstName == null) {
-            Log.e("AdminClocking", "Missing required fields!");
-            Toast.makeText(this, "Admin details are missing. Please log in again.", Toast.LENGTH_LONG).show();
-            return; // Stop the function if details are missing
-        }
-
-        ClockingRequest request = new ClockingRequest(registrationNo, adminEmail, firstName, "admin",action, timestamp);
-
-        // ✅ Log API request
-        Log.d("AdminClocking", "Sending API Request: " + new Gson().toJson(request));
-
-        apiService.clocking(request).enqueue(new Callback<ApiResponse>() {
+        apiService.adminClocking(request).enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -146,7 +134,7 @@ public class AdminClocking extends AppCompatActivity {
                 } else {
                     try {
                         String errorResponse = response.errorBody().string();
-                        Log.e("AdminClocking", "Clocking failed: " + errorResponse);
+                        Log.e("AdminClocking", "Clocking failed: " + errorResponse);  // ✅ Add detailed logging
                         Toast.makeText(AdminClocking.this, "Clocking failed: " + errorResponse, Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         Log.e("AdminClocking", "Error reading response: " + e.getMessage());
@@ -157,11 +145,8 @@ public class AdminClocking extends AppCompatActivity {
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 Log.e("AdminClocking", "API Request Failed: " + t.getMessage());
-                Toast.makeText(AdminClocking.this, "Clocking request failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminClocking.this, "Clocking request failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-
-
 }

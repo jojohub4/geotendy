@@ -22,9 +22,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -65,8 +67,45 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        loadGeofenceData(); // ✅ Always load the latest location data
+        loadGeofenceData(); // Load required location
+        displayCurrentLocation(); // Display user's current location
     }
+
+    private void displayCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+                            // Add marker for current location
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(currentLocation)
+                                    .title("Your Current Location")
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+                            // Adjust map to fit both current and required locations
+                            LatLng requiredLocation = getSavedGeofenceLocation();
+                            LatLngBounds bounds = new LatLngBounds.Builder()
+                                    .include(currentLocation)
+                                    .include(requiredLocation)
+                                    .build();
+
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+                        } else {
+                            Toast.makeText(this, "Unable to get current location.", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error fetching current location: " + e.getMessage());
+                        Toast.makeText(this, "Error fetching current location.", Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            // Request location permissions if not already granted
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        }
+    }
+
 
     private void loadGeofenceData() {
         LatLng requiredLocation = getSavedGeofenceLocation();

@@ -50,6 +50,7 @@
         android:background="@drawable/att_button"
         android:ems="10"
         android:inputType="text"
+        android:paddingLeft="10dp"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="@+id/imageView13"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
@@ -73,6 +74,7 @@
         android:layout_marginTop="12dp"
         android:background="@drawable/att_button"
         android:ems="10"
+        android:paddingLeft="10dp"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="@+id/imageView13"
         app:layout_constraintHorizontal_bias="0.138"
@@ -97,13 +99,17 @@
         android:layout_height="117dp"
         android:background="@drawable/att_button"
         android:ems="10"
-        android:inputType="text"
+        android:paddingLeft="10dp"
+        android:inputType="textMultiLine"
+        android:maxLines="5"
+        android:gravity="top|start"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/imageView13"
         app:layout_constraintEnd_toEndOf="@+id/imageView13"
         app:layout_constraintHorizontal_bias="0.246"
         app:layout_constraintStart_toStartOf="@+id/imageView13"
         app:layout_constraintTop_toBottomOf="@+id/textView14"
-        app:layout_constraintVertical_bias="0.273" />
+        app:layout_constraintVertical_bias="0.273"/>
 
     <Button
         android:id="@+id/button3"

@@ -58,7 +58,7 @@ public class AdminReportActivity extends AppCompatActivity {
             if (fromDate.isEmpty() || toDate.isEmpty()) {
                 Toast.makeText(AdminReportActivity.this, "Please select both dates", Toast.LENGTH_SHORT).show();
             } else {
-                fetchLecturerAttendance();
+                fetchAdminAttendance();
             }
         });
     }
@@ -84,39 +84,45 @@ public class AdminReportActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void fetchLecturerAttendance() {
+    private void fetchAdminAttendance() {
         SharedPreferences sharedPreferences = getSharedPreferences("UserProfile", MODE_PRIVATE);
         String email = sharedPreferences.getString("admin_email", null);
+        String registrationNo = sharedPreferences.getString("admin_reg_no", null);
 
-        if (email == null) {
-            Toast.makeText(this, "admin data missing, please log in again", Toast.LENGTH_SHORT).show();
+        if (email == null || registrationNo == null) {
+            Toast.makeText(this, "Admin data missing, please log in again", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Log.d("API Request", "Fetching logs for: " + email + " from " + fromDate + " to " + toDate);
-
-        apiService.getLecturerAttendance(email, fromDate, toDate)
-                .enqueue(new Callback<LecturerAttendanceResponse>() {
+        apiService.fetchAdminAttendance(email, registrationNo, fromDate, toDate)
+                .enqueue(new Callback<AdminAttendanceResponse>() {
                     @Override
-                    public void onResponse(Call<LecturerAttendanceResponse> call, Response<LecturerAttendanceResponse> response) {
+                    public void onResponse(Call<AdminAttendanceResponse> call, Response<AdminAttendanceResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            populateTable(response.body().getLogs());
+                            List<AdminAttendanceLogs> logs = response.body().getLogs();
+
+                            if (logs.isEmpty()) {
+                                Toast.makeText(AdminReportActivity.this, "No attendance logs found", Toast.LENGTH_SHORT).show();
+                            } else {
+                                populateTable(logs);
+                            }
                         } else {
-                            Toast.makeText(AdminReportActivity.this, "No records found", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AdminReportActivity.this, "Failed to fetch admin attendance", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<LecturerAttendanceResponse> call, Throwable t) {
-                        Toast.makeText(AdminReportActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    public void onFailure(Call<AdminAttendanceResponse> call, Throwable t) {
+                        Toast.makeText(AdminReportActivity.this, "Error fetching data: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void populateTable(List<LecturerAttendanceLog> logs) {
+
+    private void populateTable(List<AdminAttendanceLogs> logs) {
         tableLayout.removeViews(1, Math.max(0, tableLayout.getChildCount() - 1));
 
-        for (LecturerAttendanceLog log : logs) {
+        for (AdminAttendanceLogs log : logs) {
             TableRow tableRow = new TableRow(this);
             addTextViewToRow(tableRow, log.getDate());
             addTextViewToRow(tableRow, log.getTime());

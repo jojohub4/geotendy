@@ -35,4 +35,18 @@ public interface ApiService {
             @Query("toDate") String toDate
     );
 
+    @POST("/api/admin/clock")
+    Call<ApiResponse> adminClocking(@Body AdminClockingRequest request);
+
+    @GET("/api/admin/attendance")
+    Call<AdminAttendanceResponse> fetchAdminAttendance(
+            @Query("email") String email,
+            @Query("registration_no") String registrationNo,
+            @Query("fromDate") String fromDate,
+            @Query("toDate") String toDate
+    );
+
+
+        @POST("/api/support")
+        Call<ApiResponse> sendSupportEmail(@Body SupportRequest request);
 }

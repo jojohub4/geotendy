@@ -94,7 +94,7 @@ public class AdminDashboard extends AppCompatActivity {
         notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(AdminDashboard.this,LecturerReportActivity.class));
+                startActivity(new Intent(AdminDashboard.this,AdminReportActivity.class));
             }
         });
         //logging out

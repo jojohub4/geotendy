@@ -26,6 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="96dp"
         android:hint="Enter Latitude"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         android:inputType="numberDecimal"
         app:layout_constraintTop_toBottomOf="@+id/textView6"
         tools:layout_editor_absoluteX="0dp" />
@@ -36,6 +38,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
         android:hint="Enter Longitude"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         android:inputType="numberDecimal"
         app:layout_constraintTop_toBottomOf="@+id/etLatitude"
         tools:layout_editor_absoluteX="0dp" />
@@ -46,6 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
         android:hint="Enter Radius (meters)"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         android:inputType="numberDecimal"
         app:layout_constraintTop_toBottomOf="@+id/etLongitude"
         tools:layout_editor_absoluteX="-16dp" />
