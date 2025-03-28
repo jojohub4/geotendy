@@ -74,8 +74,6 @@ public class LoginActivity extends AppCompatActivity {
 
         apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
 
-        ProgressBar progressBar = findViewById(R.id.progressBar);
-
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,27 +85,12 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Please enter all details.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                // Show progress bar when login starts
-                progressBar.setVisibility(View.VISIBLE);
-
-                // Simulate login process (e.g., delay or API call)
-                performLogin(progressBar);
-
                 verifyUser(email, registrationNumber);
             }
         });
     }
 
-    private void performLogin(ProgressBar progressBar) {
-        // Simulate a login process with a delay
-        new android.os.Handler().postDelayed(() -> {
-            // Hide progress bar when login completes
-            progressBar.setVisibility(View.GONE);
-            // Proceed with login logic (e.g., start a new activity)
-            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-        }, 2000); // Delay of 2 seconds
-    }
+
 
 
     private void saveUnitsToSharedPreferences(List<CourseUnit> courses) {
